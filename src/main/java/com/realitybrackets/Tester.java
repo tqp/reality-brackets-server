@@ -21,7 +21,7 @@ public class Tester {
         ProjectedScoreService projectedScoreService = new ProjectedScoreService(pickResultService, userService, roundService);
         BestPickService bestPickService = new BestPickService(dataService, roundService, pickService);
 
-        tester.PrintObject("Result", bestPickService.getBestPicksByTeamUserRound("key_team1", "key_user2", 2));
+//        tester.PrintObject("\nResult", bestPickService.getBestPicksTest());
     }
 
     public void PrintObject(String title, Object object) {
