@@ -1,35 +1,26 @@
 package com.realitybrackets;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.realitybrackets.data.DataService_BB22;
 import com.realitybrackets.services.*;
-
-import java.io.IOException;
+import com.realitybrackets.utils.PrintObjectService;
 
 public class Tester {
     public static void main(String[] args) {
-        Tester tester = new Tester();
+        PrintObjectService printObjectService = new PrintObjectService();
         DataService_BB22 dataService = new DataService_BB22();
 
         TeamService teamService = new TeamService(dataService);
         UserService userService = new UserService(dataService);
-        RoundService roundService = new RoundService(dataService);
         ResultService resultService = new ResultService(dataService);
-        PickService pickService = new PickService(dataService, roundService);
+        RoundService roundService = new RoundService(dataService, resultService);
+        PickService pickService = new PickService(dataService, roundService, resultService);
         PickResultService pickResultService = new PickResultService(dataService, pickService, resultService, roundService);
-        ScoreService scoreService = new ScoreService(pickResultService, userService, roundService);
-        ProjectedScoreService projectedScoreService = new ProjectedScoreService(pickResultService, userService, roundService);
-        BestPickService bestPickService = new BestPickService(dataService, roundService, pickService);
+//        ScoreService scoreService = new ScoreService(pickResultService, userService, roundService);
+//        ProjectedScoreService projectedScoreService = new ProjectedScoreService(pickResultService, userService, roundService);
+//        BestPickService bestPickService = new BestPickService(dataService, roundService, pickService);
 
-//        tester.PrintObject("\nResult", bestPickService.getBestPicksTest());
+        printObjectService.PrintObject("\nResult", pickResultService.getPickResultByTeamUserContestant("key_team1", "key_user1", "key_Ian"));
     }
 
-    public void PrintObject(String title, Object object) {
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            System.out.println(title + ":\n" + mapper.writerWithDefaultPrettyPrinter().writeValueAsString(object));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+
 }

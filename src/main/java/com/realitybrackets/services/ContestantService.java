@@ -5,8 +5,9 @@ import com.realitybrackets.data.DataService_BB22;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ContestantService {
@@ -18,11 +19,13 @@ public class ContestantService {
     }
 
     public List<Contestant> getContestantList() {
-        return new ArrayList<>(dataService.getContestants());
+        return this.dataService.defineContestants().stream()
+                .sorted(Comparator.comparing(Contestant::getContestantKey))
+                .collect(Collectors.toList());
     }
 
-    public Contestant getContestantByContestantKey(String contestantKey) {
-        return dataService.getContestants().stream()
+    public Contestant getContestant(String contestantKey) {
+        return dataService.defineContestants().stream()
                 .filter(contestant -> contestant.getContestantKey().equalsIgnoreCase(contestantKey))
                 .findFirst()
                 .orElse(null);

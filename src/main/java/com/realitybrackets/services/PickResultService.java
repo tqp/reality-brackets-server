@@ -7,11 +7,8 @@ import com.realitybrackets.data.DataService_BB22;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class PickResultService {
@@ -28,112 +25,81 @@ public class PickResultService {
         this.roundService = roundService;
     }
 
-    // BY PICK
-
+    // THIS IS THE HEART OF THIS SYSTEM.
     public PickResult getPickResult(String teamKey, String userKey, Integer pickPosition, Integer roundNumber) {
+
+        // Set Default/Initial status
         PickResult.Status status = PickResult.Status.UNKNOWN;
 
-        // Set invalid status for exceptions and outliers
-        if (!this.roundService.isRoundNumberValid(roundNumber) || !this.pickService.isPickPositionValid(pickPosition, roundNumber)) {
-            return new PickResult(null, null, roundNumber, PickResult.Status.INVALID);
-        } else {
+        // Get the pick for the criteria provided.
+        Pick specificPick = this.pickService.getPick(teamKey, userKey, pickPosition);
+        // Only picks that are within the cutoff for the round provided.
+        specificPick = specificPick.getPickPosition() <= this.roundService.getRound(roundNumber).getRoundCutoffCount() ? specificPick : null;
 
-            // Get the pick for the criteria given
-            Pick specificPick = this.dataService.getPicks().stream()
-                    .filter(pick -> pick.getTeamKey().equalsIgnoreCase(teamKey))
-                    .filter(pick -> pick.getUserKey().equalsIgnoreCase(userKey))
-                    .filter(pick -> pick.getPickPosition().equals(pickPosition))
-                    .filter(pick -> pick.getPickPosition() <= this.roundService.getRoundByRoundNumber(roundNumber).getRoundCutoffCount())
-                    .findFirst()
-                    .orElse(null);
+        // Check to see if there is a result for the pick.
+        Result specificResult = null;
 
-            // Check to see if a result matches the pick (i.e. roundNumber and contestantKey)
-            Result specificResult = null;
-            if (specificPick != null) {
+        if (specificPick != null) {
 
-                if (roundNumber <= this.roundService.getLastPlayedRound()) { // Actual Pick Result
-                    specificResult = this.dataService.getResults().stream()
-                            .filter(result -> result.getRoundNumber().equals(roundNumber))
-                            .filter(result -> result.getContestantKey().equalsIgnoreCase(specificPick.getContestantKey()))
-                            .findFirst()
-                            .orElse(null);
-                    status = specificResult != null ? PickResult.Status.CORRECT : roundNumber <= this.roundService.getLastPlayedRound() ? PickResult.Status.WRONG : PickResult.Status.UNKNOWN;
-                } else { // Prijected Pick Result
-                    specificResult = this.dataService.getResults().stream()
-                            .filter(result -> result.getRoundNumber().equals(this.roundService.getLastPlayedRound()))
-                            .filter(result -> result.getContestantKey().equalsIgnoreCase(specificPick.getContestantKey()))
-                            .findFirst()
-                            .orElse(null);
-                    status = specificResult != null ? PickResult.Status.PROJECTED : PickResult.Status.WRONG;
-                }
+            if (roundNumber <= this.roundService.getLastPlayedRound()) { // Known Result
+
+                Pick pick = specificPick;
+                specificResult = this.resultService.getResultList().stream()
+                        .filter(result -> result.getRoundNumber().equals(roundNumber)) // Only check results for the round provided.
+                        .filter(result -> result.getContestantKey().equalsIgnoreCase(pick.getContestantKey())) // Only show when the pick matches the result.
+                        .findFirst()
+                        .orElse(null);
+
+                status = specificResult != null
+                        ? // If a result is found
+                        PickResult.Status.CORRECT
+                        : // If no result is found
+                        roundNumber <= this.roundService.getLastPlayedRound()
+                                ? PickResult.Status.WRONG
+                                : PickResult.Status.UNKNOWN; // This shouldn't happen since we're only looking at rounds already played.
+
+            } else { // Projected Pick Result
+
+                Pick pick = specificPick;
+                specificResult = this.resultService.getResultList().stream()
+                        .filter(result -> result.getRoundNumber().equals(this.roundService.getLastPlayedRound())) // Only check results for the round provided.
+                        .filter(result -> result.getContestantKey().equalsIgnoreCase(pick.getContestantKey())) // Only show when the pick matches the result.
+                        .findFirst()
+                        .orElse(null);
+
+                status = specificResult != null
+                        ? // If a result is found
+                        PickResult.Status.PROJECTED
+                        : // If no result is found
+                        PickResult.Status.WRONG;
+
             }
-            return new PickResult(specificPick, specificResult, roundNumber, status);
+
+        } else {
+            status = PickResult.Status.ELIMINATED;
         }
+        return new PickResult(specificPick, specificResult, roundNumber, status);
     }
 
-    // BY ROUND
+    // AGGREGATIONS
 
-    public List<PickResult> getAllResultByRound(String teamKey, String userKey, Integer roundNumber) {
+    public List<PickResult> getPickResultByTeamUserRound(String teamKey, String userKey, Integer roundNumber) {
         if (!this.roundService.isRoundNumberValid(roundNumber)) {
             throw new IllegalArgumentException("The round number is invalid.");
         } else {
-            return Stream.of(this.getPickResultsByRound(teamKey, userKey, roundNumber),
-                    this.getNotPickedResultsByRound(teamKey, userKey, roundNumber))
-                    .flatMap(Collection::stream)
-                    .collect(Collectors.toList());
-        }
-    }
-
-    public List<PickResult> getPickResultsByRound(String teamKey, String userKey, Integer roundNumber) {
-        if (!this.roundService.isRoundNumberValid(roundNumber)) {
-            throw new IllegalArgumentException("The round number is invalid.");
-        } else {
-            return this.pickService.getUserPicksByRound(teamKey, userKey, roundNumber).stream()
+            return this.pickService.getPickListByTeamUserRound(teamKey, userKey, roundNumber).stream()
                     .map(pick -> this.getPickResult(teamKey, userKey, pick.getPickPosition(), roundNumber))
                     .collect(Collectors.toList());
         }
     }
 
-    public List<PickResult> getNotPickedResultsByRound(String teamKey, String userKey, Integer roundNumber) {
-        if (!this.roundService.isRoundNumberValid(roundNumber)) {
-            throw new IllegalArgumentException("The round number is invalid.");
-        } else {
-            return this.resultService.getResultListByRound(roundNumber).stream()
-                    .filter(result -> this.pickService.getUserPicksByRound(teamKey, userKey, roundNumber).stream()
-                            .noneMatch(pick -> pick.getContestantKey().equalsIgnoreCase(result.getContestantKey())))
-                    .map(result -> new PickResult(null, result, roundNumber, PickResult.Status.NOT_PICKED))
-                    .collect(Collectors.toList());
-        }
-    }
-
-    // BY TEAM/USER
-
-    public List<PickResult> getAllResultsByUser(String teamKey, String userKey) {
-        Comparator<PickResult> compareByPickPosition = Comparator.comparing(pickResult -> pickResult.getPick()
-                != null ? pickResult.getPick().getPickPosition() : null, Comparator.nullsLast(Comparator.naturalOrder()));
-
-        return Stream.of(this.getPickResultsByTeamUser(teamKey, userKey),
-                this.getNotPickedResultsByUser(teamKey, userKey))
-                .flatMap(Collection::stream)
-                .sorted(Comparator.comparing(PickResult::getRoundNumber)
-                        .thenComparing(compareByPickPosition)
-                )
+    public List<PickResult> getPickResultByTeamUserContestant(String teamKey, String userKey, String contestantKey) {
+        List<Pick> pickList = this.pickService.getPickListByTeamUserContestant(teamKey, userKey, contestantKey);
+        Pick pick = pickList.stream().findFirst().orElse(null);
+        return this.roundService.getRoundList().stream()
+                .map(round -> this.getPickResult(teamKey, userKey, pick.getPickPosition(), round.getRoundNumber()))
                 .collect(Collectors.toList());
     }
 
-    public List<PickResult> getPickResultsByTeamUser(String teamKey, String userKey) {
-        return this.dataService.getRounds().stream()
-                .flatMap(round -> this.pickService.getUserPicksByRound(teamKey, userKey, round.getRoundNumber()).stream()
-                        .map(pick -> this.getPickResult(teamKey, userKey, pick.getPickPosition(), round.getRoundNumber())))
-                .collect(Collectors.toList());
-    }
 
-    public List<PickResult> getNotPickedResultsByUser(String teamKey, String userKey) {
-        return this.dataService.getRounds().stream()
-                .flatMap(round -> this.resultService.getResultListByRound(round.getRoundNumber()).stream()
-                        .filter(result -> this.pickService.getUserPicksByRound(teamKey, userKey, round.getRoundNumber()).stream()
-                                .noneMatch(pick -> pick.getContestantKey().equalsIgnoreCase(result.getContestantKey())))
-                        .map(result -> new PickResult(null, result, round.getRoundNumber(), PickResult.Status.NOT_PICKED)))
-                .collect(Collectors.toList());
-    }
 }

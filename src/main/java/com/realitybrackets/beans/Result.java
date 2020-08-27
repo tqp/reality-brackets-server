@@ -2,13 +2,13 @@ package com.realitybrackets.beans;
 
 public class Result {
     private Integer roundNumber;
-    private String contestantKey;
     private Integer callOutOrder;
+    private String contestantKey;
 
-    public Result(Integer roundNumber, String contestantKey, Integer callOutOrder) {
+    public Result(Integer roundNumber, Integer callOutOrder, String contestantKey) {
         this.roundNumber = roundNumber;
-        this.contestantKey = contestantKey;
         this.callOutOrder = callOutOrder;
+        this.contestantKey = contestantKey;
     }
 
     public Integer getRoundNumber() {
@@ -19,19 +19,19 @@ public class Result {
         this.roundNumber = roundNumber;
     }
 
-    public String getContestantKey() {
-        return contestantKey;
-    }
-
-    public void setContestantKey(String contestantKey) {
-        this.contestantKey = contestantKey;
-    }
-
     public Integer getCallOutOrder() {
         return callOutOrder;
     }
 
     public void setCallOutOrder(Integer callOutOrder) {
         this.callOutOrder = callOutOrder;
+    }
+
+    public String getContestantKey() {
+        return contestantKey;
+    }
+
+    public void setContestantKey(String contestantKey) {
+        this.contestantKey = contestantKey;
     }
 }

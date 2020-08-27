@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class ResultService {
-    private DataService_BB22 dataService;
+    private final DataService_BB22 dataService;
 
     @Autowired
     public ResultService(DataService_BB22 dataService) {
@@ -19,27 +19,19 @@ public class ResultService {
     }
 
     public List<Result> getResultList() {
-        return this.dataService.getResults().stream()
+        return this.dataService.defineResults().stream()
                 .sorted(Comparator.comparing(Result::getRoundNumber)
                         .thenComparing(Result::getCallOutOrder)
-                        .thenComparing(Result::getContestantKey))
-                //.peek(result -> System.out.println(result.getContestantKey()))
+                        .thenComparing(Result::getContestantKey)
+                )
                 .collect(Collectors.toList());
     }
 
-    public List<Result> getResultListByRound(Integer roundNumber) {
-        return this.dataService.getResults().stream()
+    public Result getResult(Integer roundNumber, Integer callOutOrder) {
+        return this.dataService.defineResults().stream()
                 .filter(result -> result.getRoundNumber().equals(roundNumber))
-                .sorted(Comparator.comparing(Result::getCallOutOrder)
-                        .thenComparing(Result::getContestantKey))
-                //.peek(result -> System.out.println(result.getContestantKey()))
-                .collect(Collectors.toList());
-    }
-
-    public List<Result> getRemainingContestantsByRound(Integer roundNumber) {
-        return this.dataService.getResults().stream()
-                .filter(result -> result.getRoundNumber().equals(roundNumber))
-                .sorted(Comparator.comparing(Result::getContestantKey))
-                .collect(Collectors.toList());
+                .filter(result -> result.getCallOutOrder().equals(callOutOrder))
+                .findFirst()
+                .orElse(null);
     }
 }
