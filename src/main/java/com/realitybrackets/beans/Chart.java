@@ -1,33 +1,16 @@
 package com.realitybrackets.beans;
 
-public class Pick {
-    private String teamKey;
-    private String userKey;
+public class Chart {
     private String contestantKey;
     private Integer roundNumber;
     private Integer position;
+    private String status;
 
-    public Pick(String teamKey, String userKey, Integer position, String contestantKey) {
-        this.teamKey = teamKey;
-        this.userKey = userKey;
-        this.position = position;
+    public Chart(String contestantKey, Integer roundNumber, Integer position, String status) {
         this.contestantKey = contestantKey;
-    }
-
-    public String getTeamKey() {
-        return teamKey;
-    }
-
-    public void setTeamKey(String teamKey) {
-        this.teamKey = teamKey;
-    }
-
-    public String getUserKey() {
-        return userKey;
-    }
-
-    public void setUserKey(String userKey) {
-        this.userKey = userKey;
+        this.roundNumber = roundNumber;
+        this.position = position;
+        this.status = status;
     }
 
     public String getContestantKey() {
@@ -52,5 +35,13 @@ public class Pick {
 
     public void setPosition(Integer position) {
         this.position = position;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

@@ -202,7 +202,7 @@ public class DataService_BB22 {
                 .sorted(Comparator
                         .comparing(Pick::getTeamKey)
                         .thenComparing(Pick::getUserKey)
-                        .thenComparing(Pick::getPickPosition)
+                        .thenComparing(Pick::getContestantKey)
                 )
                 .collect(Collectors.toList());
     }

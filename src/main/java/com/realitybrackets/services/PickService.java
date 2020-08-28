@@ -1,7 +1,9 @@
 package com.realitybrackets.services;
 
+import com.realitybrackets.Tester;
 import com.realitybrackets.beans.Pick;
 import com.realitybrackets.data.DataService_BB22;
+import com.realitybrackets.utils.PrintObjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,37 +13,76 @@ import java.util.stream.Collectors;
 
 @Service
 public class PickService {
+    private final PrintObjectService printObjectService;
     private final DataService_BB22 dataService;
     private final RoundService roundService;
     private final ResultService resultService;
 
     @Autowired
-    public PickService(DataService_BB22 dataService,
+    public PickService(PrintObjectService printObjectService,
+                       DataService_BB22 dataService,
                        RoundService roundService,
                        ResultService resultService
     ) {
+        this.printObjectService = printObjectService;
         this.dataService = dataService;
         this.roundService = roundService;
         this.resultService = resultService;
+    }
+
+    public static void main(String[] args) {
+        Tester.main(null);
     }
 
     public List<Pick> getPickList() {
         return this.dataService.definePicks().stream()
                 .sorted(Comparator.comparing(Pick::getTeamKey)
                         .thenComparing(Pick::getUserKey)
-                        .thenComparing(Pick::getPickPosition)
+                        .thenComparing(Pick::getPosition)
                         .thenComparing(Pick::getContestantKey)
                 )
                 .collect(Collectors.toList());
     }
 
-    public Pick getPick(String teamKey, String userKey, Integer pickPosition) {
+    public Pick getPick(String teamKey, String userKey, Integer position) {
         return this.dataService.definePicks().stream()
                 .filter(pick -> pick.getTeamKey().equalsIgnoreCase(teamKey))
                 .filter(pick -> pick.getUserKey().equalsIgnoreCase(userKey))
-                .filter(pick -> pick.getPickPosition().equals(pickPosition))
+                .filter(pick -> pick.getPosition().equals(position))
                 .findFirst()
                 .orElse(null);
+    }
+
+    // AGGREGATIONS
+
+    // Vertical
+    public List<Pick> getPickListByTeamUserRound(String teamKey, String userKey, Integer roundNumber) {
+        if (!this.roundService.isRoundNumberValid(roundNumber)) {
+            throw new IllegalArgumentException("The round number is invalid.");
+        } else {
+            return this.getPickList().stream()
+                    .filter(pick -> pick.getTeamKey().equalsIgnoreCase(teamKey)) // Filter picks by Team
+                    .filter(pick -> pick.getUserKey().equalsIgnoreCase(userKey)) // Filter picks by User
+                    .filter(pick -> isPositionValid(pick.getPosition(), roundNumber))
+                    .peek(pick -> pick.setRoundNumber(roundNumber)) // Add Round Number to Pick.
+                    .sorted(Comparator.comparing(Pick::getPosition))
+                    .collect(Collectors.toList());
+        }
+    }
+
+    // Horizontal
+    public List<Pick> getPickListByTeamUserPosition(String teamKey, String userKey, Integer position) {
+
+        return this.roundService.getRoundList().stream()
+                .flatMap(round -> this.getPickList().stream()
+                        .filter(pick -> pick.getTeamKey().equalsIgnoreCase(teamKey)) // Filter picks by Team
+                        .filter(pick -> pick.getUserKey().equalsIgnoreCase(userKey)) // Filter picks by User
+                        .filter(pick -> isPositionValid(pick.getPosition(), round.getRoundNumber()))
+                        .filter(pick -> pick.getPosition().equals(position))
+                        .peek(pick -> pick.setRoundNumber(round.getRoundNumber())) // Add Round Number to Pick
+                )
+                .sorted(Comparator.comparing(Pick::getRoundNumber))
+                .collect(Collectors.toList());
     }
 
     // VALIDATIONS
@@ -50,34 +91,14 @@ public class PickService {
         return true;
     }
 
-    public Boolean isPickPositionValid(int pickPosition, int roundNumber) {
+    public Boolean isPositionValid(int position, int roundNumber) {
         if (this.getRoundCutoffSetting()) { // Only include pick positions within the pre-defined round cutoff counts.
-            return pickPosition > 0 && pickPosition <= this.roundService.getRound(roundNumber).getRoundCutoffCount();
+            return position > 0 && position <= this.roundService.getRound(roundNumber).getRoundCutoffCount();
         } else {
-            return pickPosition > 0 && pickPosition <= this.resultService.getResultList().stream()
+            return position > 0 && position <= this.resultService.getResultList().stream()
                     .filter(result -> result.getRoundNumber().equals(roundNumber))
                     .count();
         }
-    }
-
-    // AGGREGATIONS
-
-    public List<Pick> getPickListByTeamUserRound(String teamKey, String userKey, Integer roundNumber) {
-        return this.getPickList().stream()
-                .filter(pick -> pick.getTeamKey().equalsIgnoreCase(teamKey))
-                .filter(pick -> pick.getUserKey().equalsIgnoreCase(userKey))
-                .filter(pick -> isPickPositionValid(pick.getPickPosition(), roundNumber))
-                .sorted(Comparator.comparing(Pick::getPickPosition))
-                .collect(Collectors.toList());
-    }
-
-    public List<Pick> getPickListByTeamUserContestant(String teamKey, String userKey, String contestantKey) {
-        return this.getPickList().stream()
-                .filter(pick -> pick.getTeamKey().equalsIgnoreCase(teamKey))
-                .filter(pick -> pick.getUserKey().equalsIgnoreCase(userKey))
-                .filter(pick -> pick.getContestantKey().equalsIgnoreCase(contestantKey))
-                .sorted(Comparator.comparing(Pick::getPickPosition))
-                .collect(Collectors.toList());
     }
 
 }

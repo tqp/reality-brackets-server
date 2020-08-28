@@ -4,16 +4,18 @@ public class PickResult {
     private Pick pick;
     private Result result;
     private Integer roundNumber;
+    private Integer position;
     private Status status;
 
     public enum Status {
         CORRECT, WRONG, ELIMINATED, NOT_PICKED, UNKNOWN, INVALID, PROJECTED;
     }
 
-    public PickResult(Pick pick, Result result, Integer roundNumber, Status status) {
+    public PickResult(Pick pick, Result result, Integer roundNumber, Integer position, Status status) {
         this.pick = pick;
         this.result = result;
         this.roundNumber = roundNumber;
+        this.position = position;
         this.status = status;
     }
 
@@ -39,6 +41,14 @@ public class PickResult {
 
     public void setRoundNumber(Integer roundNumber) {
         this.roundNumber = roundNumber;
+    }
+
+    public Integer getPosition() {
+        return position;
+    }
+
+    public void setPosition(Integer position) {
+        this.position = position;
     }
 
     public Status getStatus() {

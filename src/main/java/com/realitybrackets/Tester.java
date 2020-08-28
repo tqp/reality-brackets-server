@@ -11,15 +11,19 @@ public class Tester {
 
         TeamService teamService = new TeamService(dataService);
         UserService userService = new UserService(dataService);
+        ContestantService contestantService = new ContestantService(dataService);
         ResultService resultService = new ResultService(dataService);
         RoundService roundService = new RoundService(dataService, resultService);
-        PickService pickService = new PickService(dataService, roundService, resultService);
-        PickResultService pickResultService = new PickResultService(dataService, pickService, resultService, roundService);
+        PickService pickService = new PickService(printObjectService, dataService, roundService, resultService);
+        PickResultService pickResultService = new PickResultService(pickService, resultService, roundService);
+        ChartService chartService = new ChartService(roundService, contestantService, pickResultService);
 //        ScoreService scoreService = new ScoreService(pickResultService, userService, roundService);
 //        ProjectedScoreService projectedScoreService = new ProjectedScoreService(pickResultService, userService, roundService);
 //        BestPickService bestPickService = new BestPickService(dataService, roundService, pickService);
 
-        printObjectService.PrintObject("\nResult", pickResultService.getPickResultByTeamUserContestant("key_team1", "key_user1", "key_Ian"));
+
+//        printObjectService.PrintObject("test", pickService.getPickList());
+        printObjectService.PrintObject("\nResult", chartService.getChartByPosition());
     }
 
 
