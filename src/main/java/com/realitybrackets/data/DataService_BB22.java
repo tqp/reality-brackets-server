@@ -243,6 +243,21 @@ public class DataService_BB22 {
         results.add(new Result(2, 13, "key_NicoleF"));
         results.add(new Result(2, 14, "key_Tyler"));
 
+        // Round 3
+        results.add(new Result(3, 1, "key_Bayleigh"));
+        results.add(new Result(3, 2, "key_Christmas"));
+        results.add(new Result(3, 3, "key_Cody"));
+        results.add(new Result(3, 4, "key_Dani"));
+        results.add(new Result(3, 5, "key_David"));
+        results.add(new Result(3, 6, "key_DaVonne"));
+        results.add(new Result(3, 7, "key_Enzo"));
+        results.add(new Result(3, 8, "key_Ian"));
+        results.add(new Result(3, 9, "key_Kaysar"));
+        results.add(new Result(3, 10, "key_Kevin"));
+        results.add(new Result(3, 11, "key_Memphis"));
+        results.add(new Result(3, 12, "key_NicoleF"));
+        results.add(new Result(3, 13, "key_Tyler"));
+
         return results.stream()
                 .sorted(Comparator
                         .comparing(Result::getRoundNumber)

@@ -1,5 +1,6 @@
 package com.realitybrackets.services;
 
+import com.realitybrackets.beans.Pick;
 import com.realitybrackets.beans.User;
 import com.realitybrackets.data.DataService_BB22;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,5 +30,17 @@ public class UserService {
                 .filter(user -> user.getUserKey().equalsIgnoreCase(userKey))
                 .findFirst()
                 .orElse(null);
+    }
+
+    // WITH PARAMETERS
+
+    public List<User> getUserListByTeamKey(String teamKey) {
+        return this.dataService.definePicks().stream()
+                .filter(pick -> pick.getTeamKey().equalsIgnoreCase(teamKey))
+                .map(Pick::getUserKey)
+                .distinct()
+                .map(this::getUser)
+                .sorted(Comparator.comparing(User::getUserKey))
+                .collect(Collectors.toList());
     }
 }

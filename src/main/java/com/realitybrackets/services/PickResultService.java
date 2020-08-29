@@ -28,7 +28,7 @@ public class PickResultService {
         Tester.main(null);
     }
 
-    // THIS IS THE HEART OF THIS SYSTEM.
+    // Single Cell: THIS IS THE HEART OF THIS SYSTEM.
     public PickResult getPickResult(String teamKey, String userKey, Integer position, Integer roundNumber) {
 
         // Set Default/Initial status
@@ -106,5 +106,18 @@ public class PickResultService {
                 .collect(Collectors.toList());
     }
 
+    // All (Default Vertical Method)
+    public List<PickResult> getPickResultByTeamUser(String teamKey, String userKey) {
+        return this.roundService.getRoundList().stream()
+                .flatMap(round -> this.pickService.getPickListByTeamUserRound(teamKey, userKey, round.getRoundNumber()).stream()
+                        .map(pick -> this.getPickResult(teamKey, userKey, pick.getPosition(), round.getRoundNumber())))
+                .collect(Collectors.toList());
+    }
+
+    // TODO
+    // All (Horizontal Method)
+    public List<PickResult> getPickResultByTeamUser_HorizontalAggregation(String teamKey, String userKey) {
+        return null;
+    }
 
 }

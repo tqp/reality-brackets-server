@@ -3,7 +3,6 @@ package com.realitybrackets.services;
 import com.realitybrackets.Tester;
 import com.realitybrackets.beans.Pick;
 import com.realitybrackets.data.DataService_BB22;
-import com.realitybrackets.utils.PrintObjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,18 +12,15 @@ import java.util.stream.Collectors;
 
 @Service
 public class PickService {
-    private final PrintObjectService printObjectService;
     private final DataService_BB22 dataService;
     private final RoundService roundService;
     private final ResultService resultService;
 
     @Autowired
-    public PickService(PrintObjectService printObjectService,
-                       DataService_BB22 dataService,
+    public PickService(DataService_BB22 dataService,
                        RoundService roundService,
                        ResultService resultService
     ) {
-        this.printObjectService = printObjectService;
         this.dataService = dataService;
         this.roundService = roundService;
         this.resultService = resultService;
@@ -72,7 +68,6 @@ public class PickService {
 
     // Horizontal
     public List<Pick> getPickListByTeamUserPosition(String teamKey, String userKey, Integer position) {
-
         return this.roundService.getRoundList().stream()
                 .flatMap(round -> this.getPickList().stream()
                         .filter(pick -> pick.getTeamKey().equalsIgnoreCase(teamKey)) // Filter picks by Team
