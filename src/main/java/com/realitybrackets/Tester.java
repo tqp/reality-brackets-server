@@ -23,7 +23,7 @@ public class Tester {
 
         String teamKey = "key_team2";
         String userKey = "key_user1";
-        printObjectService.PrintObject("\nResult", projectedScoreService.getProjectedScoreByTeamUser_GroupByPosition(teamKey, userKey));
+        printObjectService.PrintObject("\nResult", scoreService.getScoreByTeamUserRound(teamKey, userKey, 4));
     }
 
 

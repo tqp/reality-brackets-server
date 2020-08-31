@@ -33,7 +33,7 @@ public class ProjectedScoreService {
     }
 
     // Single Cell
-    public Score getProjectedScore(String teamKey, String userKey, Integer position, Integer roundNumber) {
+    public Score getProjectedScore(String teamKey, String userKey, Integer roundNumber, Integer position) {
         PickResult pickResult = this.pickResultService.getPickResult(teamKey, userKey, position, roundNumber);
         if (pickResult.getStatus().equals(PickResult.Status.CORRECT)) {
             Double score = pickResult.getStatus().equals(PickResult.Status.CORRECT) || pickResult.getStatus().equals(PickResult.Status.PROJECTED)
