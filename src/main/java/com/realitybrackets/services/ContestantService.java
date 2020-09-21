@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,6 +28,18 @@ public class ContestantService {
     public Contestant getContestant(String contestantKey) {
         return dataService.defineContestants().stream()
                 .filter(contestant -> contestant.getContestantKey().equalsIgnoreCase(contestantKey))
+                .findFirst()
+                .orElse(null);
+    }
+
+    public Contestant getContestantByTeamUserPosition(String teamKey, String userKey, int position) {
+        return dataService.definePicks().stream()
+                .filter(pick -> pick.getTeamKey().equals(teamKey))
+                .filter(pick -> pick.getUserKey().equals(userKey))
+                .filter(pick -> pick.getPosition().equals(position))
+                .map(pick -> {
+                    return this.getContestant(pick.getContestantKey());
+                })
                 .findFirst()
                 .orElse(null);
     }

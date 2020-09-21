@@ -1,8 +1,12 @@
 package com.realitybrackets;
 
+import com.realitybrackets.beans.Pick;
 import com.realitybrackets.data.DataService_BB22;
 import com.realitybrackets.services.*;
 import com.realitybrackets.utils.PrintObjectService;
+
+import java.util.Comparator;
+import java.util.stream.Collectors;
 
 public class Tester {
     public static void main(String[] args) {
@@ -18,12 +22,14 @@ public class Tester {
         PickResultService pickResultService = new PickResultService(pickService, resultService, roundService);
         ChartService chartService = new ChartService(roundService, contestantService, pickResultService);
         ScoreService scoreService = new ScoreService(pickResultService, userService, roundService);
-        ProjectedScoreService projectedScoreService = new ProjectedScoreService(pickService, pickResultService, userService, roundService);
-        BestPickService bestPickService = new BestPickService(printObjectService, resultService, roundService, projectedScoreService);
+        ProjectedScoreService projectedScoreService = new ProjectedScoreService(pickService, pickResultService, userService, roundService, printObjectService);
+        BestPickService bestPickService = new BestPickService(printObjectService, teamService, resultService, pickService, roundService, projectedScoreService, dataService);
 
         String teamKey = "key_team2";
         String userKey = "key_user1";
-        printObjectService.PrintObject("\nResult", scoreService.getScoreByTeam_GroupByUser(teamKey));
+//        printObjectService.PrintObject("\nResult", bestPickService.getBestPickListByTeamUser(teamKey, userKey));
+
+        printObjectService.PrintObject("\nResult", pickService.getPickListByTeamUserPosition(teamKey, userKey, 1));
     }
 
 

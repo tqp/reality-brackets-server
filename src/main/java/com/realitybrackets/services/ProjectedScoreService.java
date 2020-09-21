@@ -3,6 +3,7 @@ package com.realitybrackets.services;
 import com.realitybrackets.Tester;
 import com.realitybrackets.beans.PickResult;
 import com.realitybrackets.beans.Score;
+import com.realitybrackets.utils.PrintObjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,16 +17,19 @@ public class ProjectedScoreService {
     private final PickResultService pickResultService;
     private final UserService userService;
     private final RoundService roundService;
+    private final PrintObjectService printObjectService;
 
     @Autowired
     public ProjectedScoreService(PickService pickService,
                                  PickResultService pickResultService,
                                  UserService userService,
-                                 RoundService roundService) {
+                                 RoundService roundService,
+                                 PrintObjectService printObjectService) {
         this.pickService = pickService;
         this.pickResultService = pickResultService;
         this.userService = userService;
         this.roundService = roundService;
+        this.printObjectService = printObjectService;
     }
 
     public static void main(String[] args) {
@@ -35,13 +39,13 @@ public class ProjectedScoreService {
     // Single Cell
     public Score getProjectedScore(String teamKey, String userKey, Integer roundNumber, Integer position) {
         PickResult pickResult = this.pickResultService.getPickResult(teamKey, userKey, position, roundNumber);
-        if (pickResult.getStatus().equals(PickResult.Status.CORRECT)) {
+        if (pickResult.getStatus().equals(PickResult.Status.CORRECT) || pickResult.getStatus().equals(PickResult.Status.PROJECTED)) {
             Double score = pickResult.getStatus().equals(PickResult.Status.CORRECT) || pickResult.getStatus().equals(PickResult.Status.PROJECTED)
                     ? this.roundService.getRound(roundNumber).getRoundPoints()
                     : 0;
             return new Score(teamKey, userKey, roundNumber, position, pickResult.getPick().getContestantKey(), score, pickResult.getStatus());
         } else {
-            return new Score(teamKey, userKey, roundNumber, position, pickResult.getPick().getContestantKey(), 0.0, pickResult.getStatus());
+            return new Score(teamKey, userKey, roundNumber, position, pickService.getPick(teamKey, userKey, position).getContestantKey(), 0.0, pickResult.getStatus());
         }
     }
 
