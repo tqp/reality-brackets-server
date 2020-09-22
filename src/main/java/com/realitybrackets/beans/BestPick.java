@@ -37,7 +37,7 @@ public class BestPick {
         this.theirAverageScore = theirAverageScore;
     }
 
-    public Double getDifferential() {
+    public Double getPointDifferential() {
         return differential;
     }
 
