@@ -164,38 +164,38 @@ public class DataService_BB22 {
         picks.add(new Pick("key_team2", "key_user2", 15, "key_Ian"));
         picks.add(new Pick("key_team2", "key_user2", 16, "key_Bayleigh"));
 
-        picks.add(new Pick("key_team2", "key_user3", 1, "key_Tyler"));
-        picks.add(new Pick("key_team2", "key_user3", 2, "key_Christmas"));
-        picks.add(new Pick("key_team2", "key_user3", 3, "key_David"));
-        picks.add(new Pick("key_team2", "key_user3", 4, "key_Kevin"));
-        picks.add(new Pick("key_team2", "key_user3", 5, "key_Memphis"));
-        picks.add(new Pick("key_team2", "key_user3", 6, "key_NicoleF"));
-        picks.add(new Pick("key_team2", "key_user3", 7, "key_Cody"));
+        picks.add(new Pick("key_team2", "key_user3", 1, "key_Cody"));
+        picks.add(new Pick("key_team2", "key_user3", 2, "key_Memphis"));
+        picks.add(new Pick("key_team2", "key_user3", 3, "key_Christmas"));
+        picks.add(new Pick("key_team2", "key_user3", 4, "key_Enzo"));
+        picks.add(new Pick("key_team2", "key_user3", 5, "key_Janelle"));
+        picks.add(new Pick("key_team2", "key_user3", 6, "key_Bayleigh"));
+        picks.add(new Pick("key_team2", "key_user3", 7, "key_Tyler"));
         picks.add(new Pick("key_team2", "key_user3", 8, "key_Dani"));
-        picks.add(new Pick("key_team2", "key_user3", 9, "key_NicoleA"));
-        picks.add(new Pick("key_team2", "key_user3", 10, "key_DaVonne"));
-        picks.add(new Pick("key_team2", "key_user3", 11, "key_Keesha"));
-        picks.add(new Pick("key_team2", "key_user3", 12, "key_Enzo"));
-        picks.add(new Pick("key_team2", "key_user3", 13, "key_Kaysar"));
-        picks.add(new Pick("key_team2", "key_user3", 14, "key_Janelle"));
-        picks.add(new Pick("key_team2", "key_user3", 15, "key_Ian"));
-        picks.add(new Pick("key_team2", "key_user3", 16, "key_Bayleigh"));
+        picks.add(new Pick("key_team2", "key_user3", 9, "key_NicoleF"));
+        picks.add(new Pick("key_team2", "key_user3", 10, "key_Ian"));
+        picks.add(new Pick("key_team2", "key_user3", 11, "key_DaVonne"));
+        picks.add(new Pick("key_team2", "key_user3", 12, "key_Kaysar"));
+        picks.add(new Pick("key_team2", "key_user3", 13, "key_NicoleA"));
+        picks.add(new Pick("key_team2", "key_user3", 14, "key_Kevin"));
+        picks.add(new Pick("key_team2", "key_user3", 15, "key_David"));
+        picks.add(new Pick("key_team2", "key_user3", 16, "key_Keesha"));
 
         picks.add(new Pick("key_team2", "key_user4", 1, "key_Cody"));
-        picks.add(new Pick("key_team2", "key_user4", 2, "key_Memphis"));
-        picks.add(new Pick("key_team2", "key_user4", 3, "key_Christmas"));
+        picks.add(new Pick("key_team2", "key_user4", 2, "key_Tyler"));
+        picks.add(new Pick("key_team2", "key_user4", 3, "key_Dani"));
         picks.add(new Pick("key_team2", "key_user4", 4, "key_Enzo"));
-        picks.add(new Pick("key_team2", "key_user4", 5, "key_Janelle"));
-        picks.add(new Pick("key_team2", "key_user4", 6, "key_Bayleigh"));
-        picks.add(new Pick("key_team2", "key_user4", 7, "key_Tyler"));
-        picks.add(new Pick("key_team2", "key_user4", 8, "key_Dani"));
-        picks.add(new Pick("key_team2", "key_user4", 9, "key_NicoleF"));
-        picks.add(new Pick("key_team2", "key_user4", 10, "key_Ian"));
-        picks.add(new Pick("key_team2", "key_user4", 11, "key_DaVonne"));
-        picks.add(new Pick("key_team2", "key_user4", 12, "key_Kaysar"));
-        picks.add(new Pick("key_team2", "key_user4", 13, "key_NicoleA"));
-        picks.add(new Pick("key_team2", "key_user4", 14, "key_Kevin"));
-        picks.add(new Pick("key_team2", "key_user4", 15, "key_David"));
+        picks.add(new Pick("key_team2", "key_user4", 5, "key_Ian"));
+        picks.add(new Pick("key_team2", "key_user4", 6, "key_Janelle"));
+        picks.add(new Pick("key_team2", "key_user4", 7, "key_Memphis"));
+        picks.add(new Pick("key_team2", "key_user4", 8, "key_NicoleF"));
+        picks.add(new Pick("key_team2", "key_user4", 9, "key_Kaysar"));
+        picks.add(new Pick("key_team2", "key_user4", 10, "key_DaVonne"));
+        picks.add(new Pick("key_team2", "key_user4", 11, "key_Christmas"));
+        picks.add(new Pick("key_team2", "key_user4", 12, "key_David"));
+        picks.add(new Pick("key_team2", "key_user4", 13, "key_Kevin"));
+        picks.add(new Pick("key_team2", "key_user4", 14, "key_NicoleA"));
+        picks.add(new Pick("key_team2", "key_user4", 15, "key_Bayleigh"));
         picks.add(new Pick("key_team2", "key_user4", 16, "key_Keesha"));
 
         return picks.stream()
@@ -257,6 +257,45 @@ public class DataService_BB22 {
         results.add(new Result(3, 11, "key_Memphis"));
         results.add(new Result(3, 12, "key_NicoleF"));
         results.add(new Result(3, 13, "key_Tyler"));
+
+        // Round 4
+        results.add(new Result(4, 1, "key_Bayleigh"));
+        results.add(new Result(4, 2, "key_Christmas"));
+        results.add(new Result(4, 3, "key_Cody"));
+        results.add(new Result(4, 4, "key_Dani"));
+        results.add(new Result(4, 5, "key_David"));
+        results.add(new Result(4, 6, "key_DaVonne"));
+        results.add(new Result(4, 7, "key_Enzo"));
+        results.add(new Result(4, 8, "key_Ian"));
+        results.add(new Result(4, 9, "key_Kevin"));
+        results.add(new Result(4, 10, "key_Memphis"));
+        results.add(new Result(4, 11, "key_NicoleF"));
+        results.add(new Result(4, 12, "key_Tyler"));
+
+        // Round 5
+        results.add(new Result(5, 1, "key_Christmas"));
+        results.add(new Result(5, 2, "key_Cody"));
+        results.add(new Result(5, 3, "key_Dani"));
+        results.add(new Result(5, 4, "key_David"));
+        results.add(new Result(5, 5, "key_DaVonne"));
+        results.add(new Result(5, 6, "key_Enzo"));
+        results.add(new Result(5, 7, "key_Ian"));
+        results.add(new Result(5, 8, "key_Kevin"));
+        results.add(new Result(5, 9, "key_Memphis"));
+        results.add(new Result(5, 10, "key_NicoleF"));
+        results.add(new Result(5, 11, "key_Tyler"));
+
+        // Round 6
+        results.add(new Result(6, 1, "key_Christmas"));
+        results.add(new Result(6, 2, "key_Cody"));
+        results.add(new Result(6, 3, "key_Dani"));
+        results.add(new Result(6, 4, "key_David"));
+        results.add(new Result(6, 5, "key_DaVonne"));
+        results.add(new Result(6, 6, "key_Enzo"));
+        results.add(new Result(6, 7, "key_Kevin"));
+        results.add(new Result(6, 8, "key_Memphis"));
+        results.add(new Result(6, 9, "key_NicoleF"));
+        results.add(new Result(6, 10, "key_Tyler"));
 
         return results.stream()
                 .sorted(Comparator
