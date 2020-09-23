@@ -84,77 +84,89 @@ public class BestPickService {
                 .collect(Collectors.toList());
     }
 
-    public List<BestPick> getBestPicks_Game(String teamKey, String userKey) {
+    public List<BestPick> getBestPicks(String teamKey, String userKey, Boolean onlyNextRound) {
         List<Result> remainingPlayerList = this.resultService.getResultList().stream()
                 // Get only contestants that are still in the game
                 .filter(result -> result.getRoundNumber().equals(this.roundService.getLastPlayedRound()))
                 .collect(Collectors.toList());
 
-        // What is the next round?
-        int nextRound = this.roundService.getLastPlayedRound() + 1;
-        System.out.println("nextRound: " + nextRound);
+        int nextRoundNumber = this.roundService.getLastPlayedRound() + 1;
 
-        remainingPlayerList.forEach(result -> {
-            System.out.println("---");
-            System.out.println(result.getContestantKey());
+        return remainingPlayerList.stream()
+                .map(result -> {
 
-            // Get my projected score for the contestant
-            Double score = this.pickResultService.getPickResultByTeamUser(teamKey, userKey).stream()
-                    .filter(pickResult -> pickResult.getRoundNumber() >= nextRound)
-                    .filter(pickResult -> pickResult.getPick().getContestantKey().equalsIgnoreCase(result.getContestantKey()))
-                    .filter(pickResult -> pickResult.getStatus().equals(PickResult.Status.CORRECT) || pickResult.getStatus().equals(PickResult.Status.PROJECTED))
-                    .mapToDouble(pickResult -> this.roundService.getRound(pickResult.getRoundNumber()).getRoundPoints())
-                    .sum();
+                    // Get my projected score for the contestant
+                    double myPoints = this.pickResultService.getPickResultByTeamUser(teamKey, userKey).stream()
+                            .filter(pickResult -> onlyNextRound ? pickResult.getRoundNumber() == nextRoundNumber : pickResult.getRoundNumber() >= nextRoundNumber)
+                            .filter(pickResult -> pickResult.getPick().getContestantKey().equalsIgnoreCase(result.getContestantKey()))
+                            .filter(pickResult -> pickResult.getStatus().equals(PickResult.Status.CORRECT) || pickResult.getStatus().equals(PickResult.Status.PROJECTED))
+                            .mapToDouble(pickResult -> this.roundService.getRound(pickResult.getRoundNumber()).getRoundPoints())
+                            .sum();
 
-            // Get my team opponents' combined score for the contestant
-            Double opponentsScore = this.roundService.getRoundList().stream()
-                    .flatMap(round -> {
-                        if (!this.roundService.isRoundNumberValid(round.getRoundNumber())) {
-                            throw new IllegalArgumentException("The round number is invalid.");
-                        } else {
-                            return this.pickService.getPickList().stream()
-                                    .filter(pick -> pick.getTeamKey().equalsIgnoreCase(teamKey)) // Filter picks by Team
-                                    .filter(pick -> !pick.getUserKey().equalsIgnoreCase(userKey)) // Filter picks by User
-                                    .filter(pick -> this.pickService.isPositionValid(pick.getPosition(), round.getRoundNumber()))
-                                    .peek(pick -> pick.setRoundNumber(round.getRoundNumber())) // Add Round Number to Pick
-                                    .sorted(Comparator.comparing(Pick::getPosition))
-                                    .map(pick -> this.pickResultService.getPickResult(teamKey, userKey, pick.getPosition(), round.getRoundNumber()));
-                        }
-                    })
-                    .peek(pickResult -> {
-                        System.out.println(pickResult.getPick().getUserKey() + ", " + pickResult.getRoundNumber() + ", ");
-                    })
-                    .filter(pickResult -> pickResult.getRoundNumber() >= nextRound)
-                    .filter(pickResult -> pickResult.getPick().getContestantKey().equalsIgnoreCase(result.getContestantKey()))
-                    .filter(pickResult -> pickResult.getStatus().equals(PickResult.Status.CORRECT) || pickResult.getStatus().equals(PickResult.Status.PROJECTED))
-                    .mapToDouble(pickResult -> this.roundService.getRound(pickResult.getRoundNumber()).getRoundPoints())
-                    .sum();
+                    // Get my team opponents' combined score for the contestant
+                    double opponentsTotalPoints = this.roundService.getRoundList().stream()
+                            .filter(pickResult -> onlyNextRound ? pickResult.getRoundNumber() == nextRoundNumber : pickResult.getRoundNumber() >= nextRoundNumber)
+                            .flatMap(round -> {
+                                if (!this.roundService.isRoundNumberValid(round.getRoundNumber())) {
+                                    throw new IllegalArgumentException("The round number is invalid.");
+                                } else {
+                                    return this.pickService.getPickList().stream()
+                                            .filter(pick -> pick.getTeamKey().equalsIgnoreCase(teamKey))
+                                            .filter(pick -> !pick.getUserKey().equalsIgnoreCase(userKey))
+                                            .filter(pick -> this.pickService.isPositionValid(pick.getPosition(), round.getRoundNumber()))
+                                            .peek(pick -> pick.setRoundNumber(round.getRoundNumber())) // Add Round Number to Pick
+                                            .sorted(Comparator.comparing(Pick::getPosition));
+                                }
+                            })
+                            .filter(pick -> pick.getContestantKey().equalsIgnoreCase(result.getContestantKey()))
+                            .mapToDouble(pickResult -> this.roundService.getRound(pickResult.getRoundNumber()).getRoundPoints())
+                            .sum();
 
-            System.out.println("score: " + score + ", opponentScore: " + opponentsScore);
-        });
-
-//        this.printObjectService.PrintObject("list", list);
-
-        return null;
-
+                    int numberOfOpponents = this.userService.getUserListByTeamKey(teamKey).size() - 1;
+                    double opponentsAveragePoints = opponentsTotalPoints / numberOfOpponents;
+                    double pointDifferential = myPoints - opponentsAveragePoints;
+                    return new BestPick(result.getContestantKey(), myPoints, opponentsAveragePoints, pointDifferential);
+                })
+                .collect(Collectors.toList());
     }
 
-    public List<BestPick> getBestPicksRootToStay(String teamKey, String userKey) {
-        return this.getBestPicks_NextRound(teamKey, userKey).stream()
+    public List<BestPick> getBestPicksRootToStay_NextRound(String teamKey, String userKey) {
+        return this.getBestPicks(teamKey, userKey, true).stream()
                 .filter(bestPick -> bestPick.getPointDifferential() > 0)
                 .sorted(Comparator.comparing(BestPick::getPointDifferential).reversed())
                 .collect(Collectors.toList());
     }
 
-    public List<BestPick> getBestPicksRootToLeave(String teamKey, String userKey) {
-        return this.getBestPicks_NextRound(teamKey, userKey).stream()
+    public List<BestPick> getBestPicksRootToLeave_NextRound(String teamKey, String userKey) {
+        return this.getBestPicks(teamKey, userKey, true).stream()
                 .filter(bestPick -> bestPick.getPointDifferential() < 0)
                 .sorted(Comparator.comparing(BestPick::getPointDifferential).reversed())
                 .collect(Collectors.toList());
     }
 
-    public List<BestPick> getBestPicksRootNoImpact(String teamKey, String userKey) {
-        return this.getBestPicks_NextRound(teamKey, userKey).stream()
+    public List<BestPick> getBestPicksRootNoImpact_NextRound(String teamKey, String userKey) {
+        return this.getBestPicks(teamKey, userKey, true).stream()
+                .filter(bestPick -> bestPick.getPointDifferential() == 0)
+                .sorted(Comparator.comparing(BestPick::getPointDifferential).reversed())
+                .collect(Collectors.toList());
+    }
+
+    public List<BestPick> getBestPicksRootToStay_RemainderOfGame(String teamKey, String userKey) {
+        return this.getBestPicks(teamKey, userKey, false).stream()
+                .filter(bestPick -> bestPick.getPointDifferential() > 0)
+                .sorted(Comparator.comparing(BestPick::getPointDifferential).reversed())
+                .collect(Collectors.toList());
+    }
+
+    public List<BestPick> getBestPicksRootToLeave_RemainderOfGame(String teamKey, String userKey) {
+        return this.getBestPicks(teamKey, userKey, false).stream()
+                .filter(bestPick -> bestPick.getPointDifferential() < 0)
+                .sorted(Comparator.comparing(BestPick::getPointDifferential).reversed())
+                .collect(Collectors.toList());
+    }
+
+    public List<BestPick> getBestPicksRootNoImpact_RemainderOfGame(String teamKey, String userKey) {
+        return this.getBestPicks(teamKey, userKey, false).stream()
                 .filter(bestPick -> bestPick.getPointDifferential() == 0)
                 .sorted(Comparator.comparing(BestPick::getPointDifferential).reversed())
                 .collect(Collectors.toList());

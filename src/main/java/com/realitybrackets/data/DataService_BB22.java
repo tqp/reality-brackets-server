@@ -210,7 +210,7 @@ public class DataService_BB22 {
     public List<Result> defineResults() {
         List<Result> results = new ArrayList<>();
 
-        // Round 1
+        // Round 1: Keesha
         results.add(new Result(1, 1, "key_Bayleigh"));
         results.add(new Result(1, 2, "key_Christmas"));
         results.add(new Result(1, 3, "key_Cody"));
@@ -227,7 +227,7 @@ public class DataService_BB22 {
         results.add(new Result(1, 14, "key_NicoleF"));
         results.add(new Result(1, 15, "key_Tyler"));
 
-        // Round 2
+        // Round 2: Nicole A.
         results.add(new Result(2, 1, "key_Bayleigh"));
         results.add(new Result(2, 2, "key_Christmas"));
         results.add(new Result(2, 3, "key_Cody"));
@@ -243,7 +243,7 @@ public class DataService_BB22 {
         results.add(new Result(2, 13, "key_NicoleF"));
         results.add(new Result(2, 14, "key_Tyler"));
 
-        // Round 3
+        // Round 3: Janelle
         results.add(new Result(3, 1, "key_Bayleigh"));
         results.add(new Result(3, 2, "key_Christmas"));
         results.add(new Result(3, 3, "key_Cody"));
@@ -258,7 +258,7 @@ public class DataService_BB22 {
         results.add(new Result(3, 12, "key_NicoleF"));
         results.add(new Result(3, 13, "key_Tyler"));
 
-        // Round 4
+        // Round 4: Kaysar
         results.add(new Result(4, 1, "key_Bayleigh"));
         results.add(new Result(4, 2, "key_Christmas"));
         results.add(new Result(4, 3, "key_Cody"));
@@ -272,7 +272,7 @@ public class DataService_BB22 {
         results.add(new Result(4, 11, "key_NicoleF"));
         results.add(new Result(4, 12, "key_Tyler"));
 
-        // Round 5
+        // Round 5: Bayleigh
         results.add(new Result(5, 1, "key_Christmas"));
         results.add(new Result(5, 2, "key_Cody"));
         results.add(new Result(5, 3, "key_Dani"));
@@ -285,7 +285,7 @@ public class DataService_BB22 {
         results.add(new Result(5, 10, "key_NicoleF"));
         results.add(new Result(5, 11, "key_Tyler"));
 
-        // Round 6
+        // Round 6: Ian
         results.add(new Result(6, 1, "key_Christmas"));
         results.add(new Result(6, 2, "key_Cody"));
         results.add(new Result(6, 3, "key_Dani"));

@@ -25,7 +25,7 @@ public class Tester {
 
         String teamKey = "key_team2";
         String userKey = "key_user1";
-        printObjectService.PrintObject("\nResult", bestPickService.getBestPicksRootToStay(teamKey, userKey));
+        printObjectService.PrintObject("\nResult", bestPickService.getBestPicks(teamKey, userKey, false));
     }
 
 
