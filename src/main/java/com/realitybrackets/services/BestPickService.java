@@ -49,10 +49,10 @@ public class BestPickService {
     public List<BestPick> getBestPicks_NextRound(String teamKey, String userKey) {
         return this.resultService.getResultList().stream()
                 // Get only contestants that are still in the game
-                .filter(result -> result.getRoundNumber().equals(this.roundService.getLastPlayedRound()))
+                .filter(result -> result.getRoundNumber().equals(this.roundService.getLastPlayedRoundNumber()))
                 .map(remainingContestants -> {
                     // What is the next round?
-                    int nextRound = this.roundService.getLastPlayedRound() + 1;
+                    int nextRound = this.roundService.getLastPlayedRoundNumber() + 1;
                     // How may points are correct guesses in the next round worth?
                     double pointsPerCorrect = this.roundService.getRound(nextRound).getRoundPoints();
 
@@ -87,10 +87,10 @@ public class BestPickService {
     public List<BestPick> getBestPicks(String teamKey, String userKey, Boolean onlyNextRound) {
         List<Result> remainingPlayerList = this.resultService.getResultList().stream()
                 // Get only contestants that are still in the game
-                .filter(result -> result.getRoundNumber().equals(this.roundService.getLastPlayedRound()))
+                .filter(result -> result.getRoundNumber().equals(this.roundService.getLastPlayedRoundNumber()))
                 .collect(Collectors.toList());
 
-        int nextRoundNumber = this.roundService.getLastPlayedRound() + 1;
+        int nextRoundNumber = this.roundService.getLastPlayedRoundNumber() + 1;
 
         return remainingPlayerList.stream()
                 .map(result -> {

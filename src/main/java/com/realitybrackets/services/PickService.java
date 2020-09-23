@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,6 +32,18 @@ public class PickService {
 
     public List<Pick> getPickList() {
         return this.dataService.definePicks().stream()
+                .sorted(Comparator.comparing(Pick::getTeamKey)
+                        .thenComparing(Pick::getUserKey)
+                        .thenComparing(Pick::getPosition)
+                        .thenComparing(Pick::getContestantKey)
+                )
+                .collect(Collectors.toList());
+    }
+
+    public List<Pick> getPickListByTeamUser(String teamKey, String userKey) {
+        return this.dataService.definePicks().stream()
+                .filter(pick -> pick.getTeamKey().equalsIgnoreCase(teamKey))
+                .filter(pick -> pick.getUserKey().equalsIgnoreCase(userKey))
                 .sorted(Comparator.comparing(Pick::getTeamKey)
                         .thenComparing(Pick::getUserKey)
                         .thenComparing(Pick::getPosition)
@@ -76,6 +87,19 @@ public class PickService {
                         .filter(pick -> isPositionValid(pick.getPosition(), round.getRoundNumber()))
                         .filter(pick -> pick.getPosition().equals(position))
                         .peek(pick -> pick.setRoundNumber(round.getRoundNumber())) // Add Round Number to Pick
+                )
+                .sorted(Comparator.comparing(Pick::getRoundNumber))
+                .collect(Collectors.toList());
+    }
+
+    // All
+    public List<Pick> getPickListAll(String teamKey, String userKey) {
+        return this.roundService.getRoundList().stream()
+                .flatMap(round -> this.getPickList().stream()
+                        .filter(pick -> pick.getTeamKey().equalsIgnoreCase(teamKey))
+                        .filter(pick -> pick.getUserKey().equalsIgnoreCase(userKey))
+                        .filter(pick -> isPositionValid(pick.getPosition(), round.getRoundNumber()))
+                        .peek(pick -> pick.setRoundNumber(round.getRoundNumber()))
                 )
                 .sorted(Comparator.comparing(Pick::getRoundNumber))
                 .collect(Collectors.toList());

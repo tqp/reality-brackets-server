@@ -44,7 +44,7 @@ public class PickResultService {
 
         if (specificPick != null) {
 
-            if (roundNumber <= this.roundService.getLastPlayedRound()) { // Known Result
+            if (roundNumber <= this.roundService.getLastPlayedRoundNumber()) { // Known Result
 
                 Pick pick = specificPick;
                 specificResult = this.resultService.getResultList().stream()
@@ -57,7 +57,7 @@ public class PickResultService {
                         ? // If a result is found
                         PickResult.Status.CORRECT
                         : // If no result is found
-                        roundNumber <= this.roundService.getLastPlayedRound()
+                        roundNumber <= this.roundService.getLastPlayedRoundNumber()
                                 ? PickResult.Status.WRONG
                                 : PickResult.Status.UNKNOWN; // This shouldn't happen since we're only looking at rounds already played.
 
@@ -65,7 +65,7 @@ public class PickResultService {
 
                 Pick pick = specificPick;
                 specificResult = this.resultService.getResultList().stream()
-                        .filter(result -> result.getRoundNumber().equals(this.roundService.getLastPlayedRound())) // Only check results for the round provided.
+                        .filter(result -> result.getRoundNumber().equals(this.roundService.getLastPlayedRoundNumber())) // Only check results for the round provided.
                         .filter(result -> result.getContestantKey().equalsIgnoreCase(pick.getContestantKey())) // Only show when the pick matches the result.
                         .findFirst()
                         .orElse(null);
@@ -79,7 +79,7 @@ public class PickResultService {
             }
 
         } else {
-            status = PickResult.Status.ELIMINATED;
+            status = PickResult.Status.OUT_OF_SCOPE;
         }
         return new PickResult(specificPick, specificResult, roundNumber, position, status);
     }

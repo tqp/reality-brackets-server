@@ -36,7 +36,7 @@ public class RoundService {
                 .orElse(null);
     }
 
-    public Integer getLastPlayedRound() {
+    public Integer getLastPlayedRoundNumber() {
         return this.resultService.getResultList().stream()
                 .map(Result::getRoundNumber)
                 .max(Comparator.comparing(x -> x))

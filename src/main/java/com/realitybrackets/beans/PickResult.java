@@ -8,7 +8,7 @@ public class PickResult {
     private Status status;
 
     public enum Status {
-        CORRECT, WRONG, ELIMINATED, NOT_PICKED, UNKNOWN, INVALID, PROJECTED;
+        CORRECT, WRONG, OUT_OF_SCOPE, NOT_PICKED, UNKNOWN, INVALID, PROJECTED;
     }
 
     public PickResult(Pick pick, Result result, Integer roundNumber, Integer position, Status status) {
